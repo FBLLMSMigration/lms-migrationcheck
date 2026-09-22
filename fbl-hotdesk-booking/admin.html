@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — FBL Hotdesk Booking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <img src="assets/curtin-logo.png" alt="Curtin University" class="brand-logo" onerror="this.outerHTML='&lt;span class=&quot;brand-logo-fallback&quot;&gt;Curtin University&lt;/span&gt;'">
+      <div class="mark">FBL Hotdesk Booking<small>Admin</small></div>
+    </div>
+    <nav>
+      <a href="index.html">Book a desk</a>
+      <span id="signOutNavSep" style="display:none;"> &nbsp;&middot;&nbsp; </span>
+      <a href="#" id="signOutLink" style="display:none;">Sign out</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell" id="loginShell">
+  <section class="panel login-screen">
+    <h2>Admin access</h2>
+    <p class="modal-sub">Enter the access code to manage locations, work types, equipment, buildings and desks.</p>
+    <div class="field" style="margin-bottom:16px;">
+      <label for="accessCodeInput">Access code</label>
+      <input type="password" id="accessCodeInput">
+    </div>
+    <div id="loginError"></div>
+    <button class="btn btn-primary" id="loginBtn" style="width:100%;">Sign in</button>
+  </section>
+</div>
+
+<div class="shell" id="adminShell" style="display:none;">
+  <div id="mockFlag"></div>
+
+  <nav class="admin-tabs">
+    <button class="admin-tab is-active" data-tab="locations">Locations</button>
+    <button class="admin-tab" data-tab="workTypes">Work types</button>
+    <button class="admin-tab" data-tab="equipment">Equipment</button>
+    <button class="admin-tab" data-tab="buildings">Buildings</button>
+    <button class="admin-tab" data-tab="desks">Desks</button>
+    <button class="admin-tab" data-tab="bookings">Bookings</button>
+  </nav>
+
+  <section class="panel" id="tabLocations">
+    <h2>Locations</h2>
+    <table class="admin-table" id="locationsTable"><thead><tr><th>Name</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="field-row" style="margin-top:16px;">
+      <div class="field"><label>Name</label><input type="text" id="locationNameInput" placeholder="e.g. Bentley"></div>
+      <div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="locationSaveBtn">Add location</button></div>
+    </div>
+  </section>
+
+  <section class="panel" id="tabWorkTypes" style="display:none;">
+    <h2>Work types</h2>
+    <table class="admin-table" id="workTypesTable"><thead><tr><th>Name</th><th>Description</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="field-row" style="margin-top:16px;">
+      <div class="field"><label>Name</label><input type="text" id="workTypeNameInput" placeholder="e.g. Open plan"></div>
+      <div class="field" style="flex:1;"><label>Description</label><input type="text" id="workTypeDescInput" placeholder="Shown to staff under the heading"></div>
+      <div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="workTypeSaveBtn">Add work type</button></div>
+    </div>
+  </section>
+
+  <section class="panel" id="tabEquipment" style="display:none;">
+    <h2>Equipment</h2>
+    <p class="modal-sub">What's at each desk — the full name shows in the booking confirmation, the short label shows directly on the desk tile.</p>
+    <table class="admin-table" id="equipmentTable"><thead><tr><th>Name</th><th>Short label</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="field-row" style="margin-top:16px;">
+      <div class="field" style="flex:1;"><label>Name</label><input type="text" id="equipmentNameInput" placeholder="e.g. Two screens and a laptop dock"></div>
+      <div class="field"><label>Short label</label><input type="text" id="equipmentShortInput" placeholder="e.g. 2x Screens/Dock" style="max-width:180px;"></div>
+      <div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="equipmentSaveBtn">Add equipment</button></div>
+    </div>
+  </section>
+
+  <section class="panel" id="tabBuildings" style="display:none;">
+    <h2>Buildings</h2>
+    <p class="modal-sub">This order is the order buildings appear as booking buttons on the main page — use the arrows to reorder.</p>
+    <table class="admin-table" id="buildingsTable"><thead><tr><th></th><th>Code</th><th>Name</th><th>Location</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="field-row" style="margin-top:16px;">
+      <div class="field"><label>Code</label><input type="text" id="buildingCodeInput" placeholder="e.g. B407" style="max-width:110px;"></div>
+      <div class="field"><label>Name</label><input type="text" id="buildingNameInput" placeholder="e.g. Building 407"></div>
+      <div class="field"><label>Location</label><select id="buildingLocationSelect"></select></div>
+      <div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="buildingSaveBtn">Add building</button></div>
+    </div>
+  </section>
+
+  <section class="panel" id="tabDesks" style="display:none;">
+    <div class="panel-header-row">
+      <h2>Desks</h2>
+      <button class="btn btn-primary" id="deskAddBtn">Add desk</button>
+    </div>
+    <div class="field-row" style="margin-bottom:14px; align-items:center;">
+      <input type="text" id="deskSearchInput" class="admin-search-input" placeholder="Search by code, building, work type, or equipment…" style="flex:2; margin-bottom:0;">
+      <select id="deskFilterBuildingSelect" style="max-width:220px;"><option value="">All buildings</option></select>
+      <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; color:var(--ink-soft); white-space:nowrap; cursor:pointer;">
+        <input type="checkbox" id="deskExcludeInactiveToggle" style="width:18px;height:18px;">
+        Hide inactive desks
+      </label>
+    </div>
+    <table class="admin-table" id="desksTable"><thead><tr><th>Photo</th><th>Code</th><th>Building</th><th>Work type</th><th>Days</th><th>Hours</th><th>Active</th><th></th></tr></thead><tbody></tbody></table>
+  </section>
+
+  <section class="panel" id="tabBookings" style="display:none;">
+    <h2>Bookings</h2>
+    <p class="modal-sub">Check who's booked what — by day, by desk, by Curtin ID, or by email.</p>
+    <div class="field">
+      <label>Date</label>
+      <div class="date-chip-row" id="bookingsDateChips"></div>
+      <div class="date-fallback-row">
+        <span class="date-fallback-label">or pick another date</span>
+        <input type="date" id="bookingsDateInput" class="date-fallback-input">
+      </div>
+    </div>
+    <div class="field-row" style="margin-top:14px;">
+      <div class="field"><label>Desk</label><select id="bookingsDeskSelect"><option value="">Any desk</option></select></div>
+      <div class="field"><label>Curtin ID</label><input type="text" id="bookingsIdInput" placeholder="e.g. 12345678"></div>
+      <div class="field" style="flex:1;"><label>Email</label><input type="text" id="bookingsEmailInput" placeholder="e.g. g.smith@curtin.edu.au"></div>
+    </div>
+    <div class="field-row">
+      <button class="btn btn-primary" id="bookingsSearchBtn">Search bookings</button>
+      <button class="btn btn-quiet" id="bookingsClearBtn">Clear filters</button>
+    </div>
+    <table class="admin-table" id="bookingsTable" style="margin-top:16px;">
+      <thead><tr><th>Date</th><th>Time</th><th>Desk</th><th>Curtin ID</th><th>Email</th><th>Status</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+</div>
+
+<div class="modal-backdrop" id="deskModalBackdrop" style="display:none;">
+  <div class="modal" style="max-width:640px;">
+    <h2 id="deskFormHeading">Add a desk</h2>
+    <div class="field-row">
+      <div class="field"><label>Building</label><select id="deskBuildingSelect"></select></div>
+      <div class="field"><label>Room / area</label><input type="text" id="deskRoomInput" placeholder="e.g. 333" style="max-width:120px;"></div>
+      <div class="field"><label>Desk number</label>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <input type="text" id="deskNumberInput" placeholder="e.g. D01" style="max-width:100px;" disabled>
+          <button type="button" class="btn btn-quiet" id="deskNumberUnlockBtn" style="padding:8px 10px; font-size:0.75rem;" title="Auto-assigned — unlock to set manually">Unlock</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Desk code</label>
+        <span class="tag" id="deskCodePreview" style="font-size:0.9rem;padding:9px 14px;">—</span>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Work type</label><select id="deskWorkTypeSelect"></select></div>
+      <div class="field"><label>Equipment</label><select id="deskEquipmentSelect"></select></div>
+      <div class="field">
+        <label>Active</label>
+        <input type="checkbox" id="deskActiveInput" checked style="width:22px;height:22px;">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Days available</label>
+        <div class="day-toggle-row" id="deskDayToggles"></div>
+      </div>
+      <div class="field"><label>From</label><select id="deskStartSelect"></select></div>
+      <div class="field"><label>Until</label><select id="deskEndSelect"></select></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Photo</label>
+        <input type="file" accept="image/*" id="deskPhotoInput">
+      </div>
+      <div class="field" id="deskPhotoPreviewField" style="display:none;">
+        <label>&nbsp;</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img id="deskPhotoPreview" alt="Desk photo preview" style="height:56px; width:56px; object-fit:cover; border-radius:var(--radius); border:1px solid var(--line-soft);">
+          <button type="button" class="btn btn-quiet" id="deskPhotoRemoveBtn">Remove</button>
+        </div>
+      </div>
+    </div>
+    <div id="deskFormError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-quiet" id="deskCancelEditBtn">Cancel</button>
+      <button class="btn btn-primary" id="deskSaveBtn">Add desk</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/mockdata.js"></script>
+<script src="js/api.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
