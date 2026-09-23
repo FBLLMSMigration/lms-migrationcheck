@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FBL Hotdesk Booking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <img src="assets/curtin-logo.png" alt="Curtin University" class="brand-logo" onerror="this.outerHTML='&lt;span class=&quot;brand-logo-fallback&quot;&gt;Curtin University&lt;/span&gt;'">
+      <div class="mark">FBL Hotdesk Booking</div>
+    </div>
+    <nav><a href="admin.html">Admin</a></nav>
+  </div>
+</header>
+
+<div class="shell">
+
+  <div id="mockFlag"></div>
+
+  <section class="panel" id="panelSearch">
+    <h2>Select a desk location</h2>
+    <div class="choice-row" id="buildingChoices"></div>
+
+    <h2 class="field-row-heading">Select date and time range</h2>
+    <div class="field">
+      <label>Date</label>
+      <div class="date-chip-row" id="dateChips"></div>
+      <div class="date-fallback-row">
+        <span class="date-fallback-label">or pick another date</span>
+        <input type="date" id="dateInput" class="date-fallback-input">
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:6px;">
+      <div class="range-slider" id="rangeSlider">
+        <div class="range-track"></div>
+        <div class="range-fill" id="rangeFill"></div>
+        <input type="range" id="startRange" min="8" max="21" step="1" value="8">
+        <input type="range" id="endRange" min="8" max="21" step="1" value="17">
+      </div>
+      <div class="range-ticks" id="rangeTicks"></div>
+      <div class="range-label" id="rangeLabel">8:00 am – 5:00 pm</div>
+    </div>
+
+    <button class="btn btn-primary" id="searchBtn" disabled style="width:100%;">Search available workstations</button>
+  </section>
+
+  <section class="panel" id="panelDesks" style="display:none;">
+    <h2>Available desks</h2>
+    <div id="desksContent"></div>
+  </section>
+
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" style="display:none;">
+  <div class="modal">
+    <img id="modalDeskPhoto" alt="" class="modal-desk-photo" style="display:none;">
+    <h2 id="modalDeskLabel">Desk D01</h2>
+    <div class="modal-sub" id="modalTimeSummary"></div>
+
+    <div class="field">
+      <label>Booking as</label>
+      <div class="usertype-row" id="userTypeChoices">
+        <button type="button" class="usertype-btn is-selected" data-type="staff">Staff</button>
+        <button type="button" class="usertype-btn" data-type="student">Student</button>
+        <button type="button" class="usertype-btn" data-type="visitor">Visitor</button>
+      </div>
+    </div>
+
+    <form id="bookingForm" autocomplete="on">
+      <div class="field">
+        <label for="staffIdInput" id="staffIdLabel">Staff ID</label>
+        <input type="text" id="staffIdInput" name="curtinId" autocomplete="on" placeholder="e.g. 1234567A">
+      </div>
+      <div class="field">
+        <label for="emailInput">Email</label>
+        <input type="email" id="emailInput" name="email" autocomplete="email" placeholder="you@curtin.edu.au">
+      </div>
+      <div id="modalError"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-quiet" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="modalConfirm">Confirm booking</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/mockdata.js"></script>
+<script src="js/api.js"></script>
+<script src="js/booking.js"></script>
+</body>
+</html>
